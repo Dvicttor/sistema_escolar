@@ -598,3 +598,259 @@ Durante a implementacao, foram realizados testes para verificar:
 - Geracao do arquivo JSON.
 - Geracao do arquivo PDF.
 - Download dos relatorios pela interface web.
+
+
+15. PROXIMAS ETAPAS PARA HOSPEDAGEM NA AWS COM CODEPIPELINE
+
+Esta secao descreve um plano faseado para publicar a aplicacao web na AWS
+usando CodePipeline. O objetivo e sair do ambiente local e chegar a uma
+implantacao automatizada, versionada e com banco de dados gerenciado.
+
+15.1 Fase 1 - Preparacao do projeto
+
+Objetivo:
+
+Preparar o projeto para rodar fora do computador local.
+
+Atividades:
+
+- Garantir que todo o codigo esteja no GitHub.
+- Confirmar que o repositorio remoto esta atualizado.
+- Remover arquivos que nao devem ir para producao, como banco SQLite local,
+  relatorios gerados e caches.
+- Manter o arquivo .gitignore atualizado.
+- Definir variaveis de ambiente usadas pela aplicacao:
+  - MYSQL_HOST
+  - MYSQL_PORT
+  - MYSQL_USER
+  - MYSQL_PASSWORD
+  - MYSQL_DATABASE
+  - FLASK_SECRET_KEY
+- Ajustar a aplicacao para nao depender do modo debug em producao.
+- Definir o comando de inicializacao da aplicacao web.
+
+Resultado esperado:
+
+Repositorio limpo, versionado e pronto para ser usado como origem do pipeline.
+
+15.2 Fase 2 - Escolha da arquitetura de hospedagem
+
+Objetivo:
+
+Definir onde a aplicacao Flask sera executada na AWS.
+
+Opcao recomendada para este projeto:
+
+- AWS Elastic Beanstalk com ambiente Python.
+
+Motivos:
+
+- E mais simples para publicar aplicacoes Flask.
+- Gerencia servidor, deploy e balanceamento de forma mais automatizada.
+- Integra bem com CodePipeline.
+
+Alternativas possiveis:
+
+- EC2 com CodeDeploy.
+- ECS com container Docker.
+- App Runner.
+
+Para uma primeira publicacao academica, Elastic Beanstalk e o caminho mais
+simples.
+
+15.3 Fase 3 - Banco de dados em producao
+
+Objetivo:
+
+Substituir o banco local por um banco gerenciado na AWS.
+
+Servico recomendado:
+
+- Amazon RDS for MySQL.
+
+Atividades:
+
+- Criar uma instancia RDS MySQL.
+- Criar o banco sistema_academico.
+- Executar o arquivo schema.sql no banco RDS.
+- Configurar usuario e senha do banco.
+- Liberar acesso entre a aplicacao e o RDS usando Security Groups.
+- Guardar dados sensiveis como senha em variaveis de ambiente ou AWS Secrets
+  Manager.
+
+Resultado esperado:
+
+Banco MySQL acessivel pela aplicacao hospedada, sem depender do SQLite local.
+
+15.4 Fase 4 - Configuracao do Elastic Beanstalk
+
+Objetivo:
+
+Criar o ambiente onde a aplicacao Flask sera executada.
+
+Atividades:
+
+- Criar uma aplicacao no Elastic Beanstalk.
+- Selecionar plataforma Python.
+- Configurar as variaveis de ambiente do banco:
+  - MYSQL_HOST com o endpoint do RDS.
+  - MYSQL_PORT com 3306.
+  - MYSQL_USER com o usuario do banco.
+  - MYSQL_PASSWORD com a senha do banco.
+  - MYSQL_DATABASE com sistema_academico.
+  - MYSQL_REQUIRED com 1, para obrigar o uso do MySQL em producao.
+  - FLASK_SECRET_KEY com uma chave segura.
+- Configurar logs da aplicacao.
+- Testar deploy manual inicial antes de automatizar o pipeline.
+
+Resultado esperado:
+
+Aplicacao Flask publicada em uma URL do Elastic Beanstalk.
+
+15.5 Fase 5 - Arquivos necessarios para deploy
+
+Objetivo:
+
+Adicionar ao repositorio os arquivos esperados pelo ambiente de hospedagem.
+
+Arquivos recomendados:
+
+- requirements.txt
+  Ja existe e lista as dependencias Python.
+
+- application.py
+  Pode ser criado para expor a variavel application usada pelo Elastic
+  Beanstalk. Exemplo:
+
+  from app import app as application
+
+- Procfile
+  Pode ser usado para informar o comando de execucao. Exemplo:
+
+  web: gunicorn application:application
+
+- requirements.txt
+  Deve incluir gunicorn para execucao em producao.
+
+Resultado esperado:
+
+Repositorio com estrutura adequada para deploy Python na AWS.
+
+15.6 Fase 6 - Criacao do CodePipeline
+
+Objetivo:
+
+Automatizar o fluxo de entrega da aplicacao.
+
+Etapas do pipeline:
+
+1. Source
+   Origem do codigo no GitHub.
+
+2. Build
+   Etapa opcional usando CodeBuild para instalar dependencias, validar sintaxe
+   e executar testes.
+
+3. Deploy
+   Publicacao no Elastic Beanstalk.
+
+Atividades:
+
+- Criar um pipeline no AWS CodePipeline.
+- Conectar o GitHub como origem.
+- Selecionar a branch main.
+- Criar ou selecionar um projeto CodeBuild.
+- Configurar o destino como Elastic Beanstalk.
+- Definir permissoes IAM para CodePipeline, CodeBuild e Elastic Beanstalk.
+
+Resultado esperado:
+
+Cada push na branch main inicia automaticamente o processo de deploy.
+
+15.7 Fase 7 - Configuracao do CodeBuild
+
+Objetivo:
+
+Validar o projeto antes do deploy.
+
+Arquivo recomendado:
+
+- buildspec.yml
+
+Exemplo de etapas:
+
+- Instalar dependencias com pip.
+- Verificar sintaxe dos arquivos Python.
+- Executar testes, quando forem criados.
+- Empacotar a aplicacao para deploy.
+
+Comandos sugeridos:
+
+- python -m pip install -r requirements.txt
+- python -m py_compile app.py db.py relatorios.py Sistema_academico.py
+
+Resultado esperado:
+
+Deploy so continua se a aplicacao passar pelas verificacoes basicas.
+
+15.8 Fase 8 - Seguranca e configuracoes sensiveis
+
+Objetivo:
+
+Evitar que senhas e dados sensiveis fiquem expostos no codigo.
+
+Atividades:
+
+- Nunca salvar senha do banco no GitHub.
+- Usar variaveis de ambiente no Elastic Beanstalk.
+- Usar Security Groups para permitir que somente a aplicacao acesse o RDS.
+- Criar usuarios IAM com permissoes minimas.
+- Considerar AWS Secrets Manager para armazenar credenciais.
+- Ativar HTTPS usando certificado no AWS Certificate Manager.
+
+Resultado esperado:
+
+Aplicacao publicada com configuracoes mais seguras.
+
+15.9 Fase 9 - Testes pos-deploy
+
+Objetivo:
+
+Validar se a aplicacao publicada esta funcionando corretamente.
+
+Checklist:
+
+- Acessar a URL publica do Elastic Beanstalk.
+- Cadastrar aluno.
+- Cadastrar professor.
+- Cadastrar disciplina.
+- Matricular aluno em disciplina.
+- Remover matricula da interface e verificar se ela continua no banco com
+  ativo = 0.
+- Baixar relatorio em JSON.
+- Baixar relatorio em PDF.
+- Verificar logs da aplicacao.
+- Confirmar conexao com o RDS MySQL.
+
+Resultado esperado:
+
+Aplicacao validada em ambiente AWS.
+
+15.10 Fase 10 - Melhorias futuras para producao
+
+Objetivo:
+
+Evoluir o projeto para um ambiente mais robusto.
+
+Melhorias recomendadas:
+
+- Criar testes automatizados.
+- Adicionar autenticacao de usuarios.
+- Criar controle de permissoes por perfil.
+- Criar migrations para evolucao do banco.
+- Adicionar pagina de edicao e exclusao logica para outros cadastros.
+- Configurar monitoramento com CloudWatch.
+- Configurar dominio proprio.
+- Configurar HTTPS.
+- Separar ambiente de desenvolvimento e producao.
+- Criar backup automatico do RDS.
