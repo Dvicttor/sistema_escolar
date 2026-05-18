@@ -1,0 +1,63 @@
+20 perguntas respondidas sobre orientacao a objetos no Sistema Academico
+
+Projeto: Sistema Academico
+
+1. O que e uma classe e quais classes foram criadas neste projeto?
+Resposta: Classe e um modelo usado para criar objetos. Neste projeto foram criadas as classes Pessoa, Aluno, Professor, Disciplina e SistemaAcademico.
+
+2. O que e um objeto e quais objetos sao instanciados na funcao main de Sistema_academico.py?
+Resposta: Objeto e uma instancia de uma classe. Na funcao main sao instanciados os objetos sistema, professor, aluno_1, aluno_2 e disciplina.
+
+3. Qual e a responsabilidade da classe Pessoa dentro do projeto?
+Resposta: A classe Pessoa guarda os dados comuns de uma pessoa, como nome e CPF, servindo como classe base para Aluno e Professor.
+
+4. Por que Aluno e Professor herdam da classe Pessoa?
+Resposta: Porque Aluno e Professor tambem sao pessoas e possuem atributos em comum, como nome e CPF. A heranca evita repeticao de codigo.
+
+5. Quais atributos a classe Aluno recebe diretamente da classe Pessoa?
+Resposta: A classe Aluno recebe os atributos nome e cpf da classe Pessoa.
+
+6. Quais atributos sao especificos da classe Aluno?
+Resposta: Os atributos especificos de Aluno sao matricula, curso e disciplinas.
+
+7. Quais atributos sao especificos da classe Professor?
+Resposta: Os atributos especificos de Professor sao registro, area e disciplinas.
+
+8. Qual e a responsabilidade da classe Disciplina no sistema?
+Resposta: A classe Disciplina representa uma disciplina academica, armazenando nome, codigo, carga horaria, professor responsavel e lista de alunos matriculados.
+
+9. Como o metodo super() e utilizado nos construtores de Aluno e Professor?
+Resposta: O metodo super() chama o construtor da classe Pessoa para inicializar nome e cpf antes de definir os atributos especificos de Aluno ou Professor.
+
+10. O que o metodo __init__ faz em cada classe do projeto?
+Resposta: O __init__ e o construtor. Ele inicializa os atributos do objeto quando ele e criado, como nome, CPF, matricula, curso, registro, area, codigo, carga horaria e listas internas.
+
+11. O que o metodo __str__ permite fazer ao imprimir objetos como Aluno, Professor e Disciplina?
+Resposta: O metodo __str__ define como o objeto sera apresentado em formato de texto quando for usado em print(), deixando a exibicao mais clara.
+
+12. Como acontece a associacao entre um aluno e uma disciplina?
+Resposta: A associacao acontece quando o metodo matricular_aluno da disciplina adiciona o aluno na lista de alunos da disciplina e tambem adiciona a disciplina na lista do aluno.
+
+13. Como acontece a associacao entre um professor e uma disciplina?
+Resposta: A associacao acontece pelo metodo definir_professor, que define o professor da disciplina e adiciona a disciplina na lista de disciplinas do professor.
+
+14. Por que a classe Disciplina possui uma lista de alunos?
+Resposta: Porque uma disciplina pode ter varios alunos matriculados. A lista permite guardar e listar todos esses alunos.
+
+15. Por que a classe Aluno possui uma lista de disciplinas?
+Resposta: Porque um aluno pode estar matriculado em varias disciplinas. A lista permite saber quais disciplinas pertencem ao aluno.
+
+16. Como o metodo matricular_aluno ajuda a manter a relacao entre aluno e disciplina?
+Resposta: Ele evita duplicidade e atualiza os dois lados da relacao: coloca o aluno na disciplina e coloca a disciplina no aluno.
+
+17. Como o metodo definir_professor ajuda a manter a relacao entre professor e disciplina?
+Resposta: Ele define o professor responsavel dentro da disciplina e tambem registra essa disciplina na lista de disciplinas do professor.
+
+18. O que o metodo remover_dados da classe Aluno faz e quais atributos ele modifica?
+Resposta: O metodo remove o aluno das listas de alunos das disciplinas, limpa nome, cpf, matricula e curso, e tambem esvazia a lista de disciplinas do aluno.
+
+19. Qual e a responsabilidade da classe SistemaAcademico em relacao as outras classes?
+Resposta: A classe SistemaAcademico organiza o funcionamento geral do sistema. Ela guarda listas de alunos, professores e disciplinas, faz cadastros, buscas, edicoes, matriculas, listagens e gera dados para relatorios.
+
+20. Como os conceitos de classe, objeto, heranca, encapsulamento e associacao aparecem no projeto?
+Resposta: Classe aparece nos modelos Pessoa, Aluno, Professor, Disciplina e SistemaAcademico. Objeto aparece nas instancias criadas na main. Heranca aparece quando Aluno e Professor herdam de Pessoa. Encapsulamento aparece na organizacao dos dados e comportamentos dentro de cada classe. Associacao aparece nas relacoes entre aluno e disciplina e entre professor e disciplina.

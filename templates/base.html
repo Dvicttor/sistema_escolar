@@ -8,7 +8,15 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="{{ url_for('index') }}">Sistema Academico</a>
+      <div class="brand-wrap">
+        <div class="space-scene" aria-hidden="true">
+          <div class="orbit">
+            <div class="ship"></div>
+          </div>
+          <div class="planet"></div>
+        </div>
+        <a class="brand" href="{{ url_for('index') }}">Sistema Academico</a>
+      </div>
       <nav>
         <a href="{{ url_for('alunos') }}">Alunos</a>
         <a href="{{ url_for('professores') }}">Professores</a>
