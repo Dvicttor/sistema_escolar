@@ -5,6 +5,7 @@
   <div>
     <p class="eyebrow">Painel</p>
     <h1>Gestao academica</h1>
+    <p class="page-summary">Sistema para secretaria, professores e alunos acompanharem cadastros, disciplinas, matriculas e relatorios academicos.</p>
     <p class="database-note">Banco em uso: {{ database_label }}</p>
   </div>
   <div class="actions">
@@ -30,6 +31,33 @@
     <span>{{ counts.matriculas }}</span>
     <p>Matriculas</p>
   </article>
+</section>
+
+{% if avisos_configuracao %}
+  <section class="panel config-panel">
+    <div class="panel-header">
+      <h2>Ajustes antes de producao</h2>
+    </div>
+    <ul class="check-list">
+      {% for aviso in avisos_configuracao %}
+        <li>{{ aviso }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endif %}
+
+<section class="panel ready-panel">
+  <div class="panel-header">
+    <h2>Funcionalidades essenciais</h2>
+  </div>
+  <div class="ready-grid">
+    <span>Cadastro de alunos</span>
+    <span>Cadastro de professores</span>
+    <span>Cadastro de disciplinas</span>
+    <span>Matriculas sem duplicidade</span>
+    <span>Pesquisa por nome ou codigo</span>
+    <span>Relatorios PDF e JSON</span>
+  </div>
 </section>
 
 <section class="panel">

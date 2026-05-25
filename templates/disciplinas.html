@@ -11,6 +11,7 @@
 </section>
 
 <section class="grid">
+  {% if not read_only %}
   <form class="panel form-panel" method="post">
     <h2>Nova disciplina</h2>
     <label>Nome<input name="nome" required></label>
@@ -27,10 +28,22 @@
     </label>
     <button type="submit">Cadastrar disciplina</button>
   </form>
+  {% endif %}
 
   <div class="panel">
     <div class="panel-header">
       <h2>Disciplinas cadastradas</h2>
+      <form class="search-form" method="get">
+        <input
+          name="pesquisa"
+          placeholder="Pesquisar nome, codigo ou professor"
+          value="{{ pesquisa }}"
+        >
+        <button type="submit">Pesquisar</button>
+        {% if pesquisa %}
+          <a class="ghost-link" href="{{ url_for('ver_disciplinas') if read_only else url_for('disciplinas') }}">Limpar</a>
+        {% endif %}
+      </form>
     </div>
     <div class="table-wrap">
       <table>
@@ -41,7 +54,9 @@
             <th>Professor</th>
             <th>Carga</th>
             <th>Alunos</th>
-            <th></th>
+            {% if not read_only %}
+              <th></th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -52,10 +67,12 @@
               <td>{{ disciplina.professor }}</td>
               <td>{{ disciplina.carga_horaria }}h</td>
               <td>{{ disciplina.total_alunos }}</td>
-              <td><a class="ghost-link" href="{{ url_for('editar_disciplina', disciplina_id=disciplina.id) }}">Editar</a></td>
+              {% if not read_only %}
+                <td><a class="ghost-link" href="{{ url_for('editar_disciplina', disciplina_id=disciplina.id) }}">Editar</a></td>
+              {% endif %}
             </tr>
           {% else %}
-            <tr><td colspan="6" class="empty">Nenhuma disciplina cadastrada.</td></tr>
+            <tr><td colspan="{{ 6 if not read_only else 5 }}" class="empty">Nenhuma disciplina cadastrada.</td></tr>
           {% endfor %}
         </tbody>
       </table>

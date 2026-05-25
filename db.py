@@ -105,6 +105,34 @@ def _ensure_sqlite_schema(connection):
           FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE,
           FOREIGN KEY (disciplina_id) REFERENCES disciplinas(id) ON DELETE CASCADE
         );
+
+        CREATE TABLE IF NOT EXISTS usuarios (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          username TEXT NOT NULL UNIQUE,
+          email TEXT NOT NULL UNIQUE,
+          senha_hash TEXT NOT NULL,
+          tipo TEXT NOT NULL,
+          professor_id INTEGER NULL,
+          aluno_id INTEGER NULL,
+          ativo INTEGER NOT NULL DEFAULT 1,
+          criado_em TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (professor_id) REFERENCES professores(id) ON DELETE SET NULL,
+          FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE SET NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS notas (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          aluno_id INTEGER NOT NULL,
+          disciplina_id INTEGER NOT NULL,
+          nota REAL NOT NULL,
+          professor_id INTEGER NOT NULL,
+          criado_em TEXT DEFAULT CURRENT_TIMESTAMP,
+          atualizado_em TEXT DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE (aluno_id, disciplina_id),
+          FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE,
+          FOREIGN KEY (disciplina_id) REFERENCES disciplinas(id) ON DELETE CASCADE,
+          FOREIGN KEY (professor_id) REFERENCES professores(id) ON DELETE CASCADE
+        );
         """
     )
     columns = {
@@ -157,6 +185,44 @@ def _ensure_sqlite_schema(connection):
          WHERE a.matricula IN (?, ?)
         """,
         ("POO101", "2026001", "2026002"),
+    )
+    connection.execute(
+        """
+        INSERT OR IGNORE INTO usuarios (username, email, senha_hash, tipo, professor_id, aluno_id)
+        SELECT ?, ?, ?, ?, id, NULL FROM professores WHERE registro = ?
+        """,
+        (
+            "professor1",
+            "professor1@example.com",
+            "scrypt:32768:8:1$HShHuMGCGm8luLRm$2460c9de80d8f2eecd7603ff8ebf31df1c1c39e6f859581248ca1eefa1e53b60133c4334bb434b843bf12c4d0fe2d4db67116239f94e3c6e6de3b8399a395537",
+            "professor",
+            "PROF001",
+        ),
+    )
+    connection.execute(
+        """
+        INSERT OR IGNORE INTO usuarios (username, email, senha_hash, tipo, professor_id, aluno_id)
+        SELECT ?, ?, ?, ?, NULL, id FROM alunos WHERE matricula = ?
+        """,
+        (
+            "aluno1",
+            "aluno1@example.com",
+            "scrypt:32768:8:1$HShHuMGCGm8luLRm$2460c9de80d8f2eecd7603ff8ebf31df1c1c39e6f859581248ca1eefa1e53b60133c4334bb434b843bf12c4d0fe2d4db67116239f94e3c6e6de3b8399a395537",
+            "aluno",
+            "2026001",
+        ),
+    )
+    connection.execute(
+        """
+        INSERT OR IGNORE INTO usuarios (username, email, senha_hash, tipo, professor_id, aluno_id)
+        VALUES (?, ?, ?, ?, NULL, NULL)
+        """,
+        (
+            "secretaria",
+            "secretaria@example.com",
+            "scrypt:32768:8:1$HShHuMGCGm8luLRm$2460c9de80d8f2eecd7603ff8ebf31df1c1c39e6f859581248ca1eefa1e53b60133c4334bb434b843bf12c4d0fe2d4db67116239f94e3c6e6de3b8399a395537",
+            "secretaria",
+        ),
     )
     connection.commit()
 

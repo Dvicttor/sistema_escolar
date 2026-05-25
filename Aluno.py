@@ -7,6 +7,7 @@ class Aluno(Pessoa):
         self.matricula = matricula
         self.curso = curso
         self.disciplinas = []
+        self.ativo = True
 
     def adicionar_disciplina(self, disciplina):
         if disciplina not in self.disciplinas:
@@ -23,14 +24,13 @@ class Aluno(Pessoa):
             if self in disciplina.alunos:
                 disciplina.alunos.remove(self)
 
-        self.nome = ""
-        self.cpf = ""
-        self.matricula = ""
-        self.curso = ""
         self.disciplinas.clear()
+        self.ativo = False
 
     def __str__(self):
+        status = "ativo" if self.ativo else "removido"
         return (
             f"Aluno: {self.nome} | CPF: {self.cpf} | "
-            f"Matricula: {self.matricula} | Curso: {self.curso}"
+            f"Matricula: {self.matricula} | Curso: {self.curso} | "
+            f"Status: {status}"
         )

@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block titulo %}Lançar Notas - Sistema Academico{% endblock %}
+
+{% block conteudo %}
+<style>
+    body {
+        background: linear-gradient(135deg, #3d2f5c 0%, #5a3d7c 50%, #7d4f97 100%);
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        padding: 20px 0;
+    }
+    
+    .notas-container {
+        max-width: 1000px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+    
+    .notas-header {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .notas-header h2 {
+        color: #3d2f5c;
+        margin-top: 0;
+        font-size: 28px;
+    }
+    
+    .form-nota {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 5px;
+        font-size: 14px;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+    }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+        outline: none;
+        border-color: #7d4f97;
+        box-shadow: 0 0 5px rgba(125, 79, 151, 0.3);
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #3d2f5c 0%, #7d4f97 100%);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(125, 79, 151, 0.3);
+    }
+    
+    .notas-table-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        overflow-x: auto;
+    }
+    
+    .notas-table-container h3 {
+        color: #3d2f5c;
+        margin-top: 0;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    
+    table thead {
+        background: #f8f9fa;
+        border-bottom: 2px solid #3d2f5c;
+    }
+    
+    table th {
+        padding: 12px;
+        text-align: left;
+        color: #3d2f5c;
+        font-weight: bold;
+    }
+    
+    table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    table tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .nota-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        color: white;
+        text-align: center;
+        min-width: 50px;
+    }
+    
+    .nota-badge.alta {
+        background: #28a745;
+    }
+    
+    .nota-badge.media {
+        background: #ffc107;
+        color: #333;
+    }
+    
+    .nota-badge.baixa {
+        background: #dc3545;
+    }
+    
+    .nota-badge.vazia {
+        background: #999;
+    }
+    
+    .alerts {
+        margin-bottom: 20px;
+    }
+    
+    .alert {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        border-left: 4px solid;
+    }
+    
+    .alert-success {
+        border-left-color: #28a745;
+        color: #155724;
+    }
+    
+    .alert-warning {
+        border-left-color: #ffc107;
+        color: #856404;
+    }
+    
+    .alert-danger {
+        border-left-color: #dc3545;
+        color: #721c24;
+    }
+</style>
+
+<div class="notas-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alerts">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <div class="notas-header">
+        <h2>📝 Lançar Notas</h2>
+        <p>Insira as notas de seus alunos nas disciplinas</p>
+    </div>
+    
+    <div class="form-nota">
+        <h3 style="color: #3d2f5c; margin-top: 0;">Adicionar/Atualizar Nota</h3>
+        <form method="POST">
+            <div class="form-group">
+                <label for="aluno_id">Aluno</label>
+                <select name="aluno_id" id="aluno_id" required>
+                    <option value="">-- Selecione um aluno --</option>
+                    {% set alunos_unicos = {} %}
+                    {% for item in alunos_disciplinas %}
+                        {% if item.aluno_id not in alunos_unicos %}
+                            {% set _ = alunos_unicos.update({item.aluno_id: item}) %}
+                            <option value="{{ item.aluno_id }}">{{ item.aluno_nome }} ({{ item.aluno_matricula }})</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="disciplina_id">Disciplina</label>
+                <select name="disciplina_id" id="disciplina_id" required>
+                    <option value="">-- Selecione uma disciplina --</option>
+                    {% set disciplinas_unicas = {} %}
+                    {% for item in alunos_disciplinas %}
+                        {% if item.disciplina_id not in disciplinas_unicas %}
+                            {% set _ = disciplinas_unicas.update({item.disciplina_id: item}) %}
+                            <option value="{{ item.disciplina_id }}">{{ item.disciplina_nome }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="nota">Nota (0-10)</label>
+                <input type="number" name="nota" id="nota" min="0" max="10" step="0.5" placeholder="Digite a nota" required>
+            </div>
+            
+            <button type="submit" class="btn-submit">💾 Salvar Nota</button>
+        </form>
+    </div>
+    
+    <div class="notas-table-container">
+        <h3>📊 Notas Lançadas</h3>
+        {% if alunos_disciplinas %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>Aluno</th>
+                        <th>Matrícula</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in alunos_disciplinas %}
+                        <tr>
+                            <td><strong>{{ item.disciplina_nome }}</strong></td>
+                            <td>{{ item.aluno_nome }}</td>
+                            <td>{{ item.aluno_matricula }}</td>
+                            <td>
+                                {% if item.nota %}
+                                    {% if item.nota >= 7 %}
+                                        <span class="nota-badge alta">{{ item.nota }}</span>
+                                    {% elif item.nota >= 5 %}
+                                        <span class="nota-badge media">{{ item.nota }}</span>
+                                    {% else %}
+                                        <span class="nota-badge baixa">{{ item.nota }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="nota-badge vazia">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="text-align: center; color: #999; padding: 20px;">Nenhum aluno encontrado em suas disciplinas.</p>
+        {% endif %}
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{{ url_for('dashboard') }}" style="display: inline-block; padding: 12px 25px; background: linear-gradient(135deg, #3d2f5c 0%, #7d4f97 100%); color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+            ← Voltar ao Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

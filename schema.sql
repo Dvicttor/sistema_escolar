@@ -50,6 +50,24 @@ CREATE TABLE IF NOT EXISTS matriculas (
     ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS usuarios (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(60) NOT NULL UNIQUE,
+  email VARCHAR(120) NOT NULL UNIQUE,
+  senha_hash VARCHAR(255) NOT NULL,
+  tipo ENUM('professor', 'aluno', 'secretaria') NOT NULL,
+  professor_id INT NULL,
+  aluno_id INT NULL,
+  ativo TINYINT(1) NOT NULL DEFAULT 1,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_usuarios_professor
+    FOREIGN KEY (professor_id) REFERENCES professores(id)
+    ON DELETE SET NULL,
+  CONSTRAINT fk_usuarios_aluno
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id)
+    ON DELETE SET NULL
+);
+
 INSERT IGNORE INTO professores (nome, cpf, registro, area)
 VALUES ('Mariana Souza', '111.222.333-44', 'PROF001', 'Programacao');
 
@@ -68,3 +86,16 @@ SELECT a.id, d.id
   FROM alunos a
   JOIN disciplinas d ON d.codigo = 'POO101'
  WHERE a.matricula IN ('2026001', '2026002');
+
+INSERT IGNORE INTO usuarios (username, email, senha_hash, tipo, professor_id, aluno_id)
+SELECT 'professor1', 'professor1@example.com', 'scrypt:32768:8:1$HShHuMGCGm8luLRm$2460c9de80d8f2eecd7603ff8ebf31df1c1c39e6f859581248ca1eefa1e53b60133c4334bb434b843bf12c4d0fe2d4db67116239f94e3c6e6de3b8399a395537', 'professor', id, NULL
+  FROM professores
+ WHERE registro = 'PROF001';
+
+INSERT IGNORE INTO usuarios (username, email, senha_hash, tipo, professor_id, aluno_id)
+SELECT 'aluno1', 'aluno1@example.com', 'scrypt:32768:8:1$HShHuMGCGm8luLRm$2460c9de80d8f2eecd7603ff8ebf31df1c1c39e6f859581248ca1eefa1e53b60133c4334bb434b843bf12c4d0fe2d4db67116239f94e3c6e6de3b8399a395537', 'aluno', NULL, id
+  FROM alunos
+ WHERE matricula = '2026001';
+
+INSERT IGNORE INTO usuarios (username, email, senha_hash, tipo, professor_id, aluno_id)
+VALUES ('secretaria', 'secretaria@example.com', 'scrypt:32768:8:1$HShHuMGCGm8luLRm$2460c9de80d8f2eecd7603ff8ebf31df1c1c39e6f859581248ca1eefa1e53b60133c4334bb434b843bf12c4d0fe2d4db67116239f94e3c6e6de3b8399a395537', 'secretaria', NULL, NULL);

@@ -3,6 +3,9 @@
 Interface web em Flask para cadastrar alunos, professores, disciplinas e
 matriculas usando MySQL.
 
+O objetivo do sistema e ajudar a secretaria, professores e alunos a organizar
+cadastros academicos, vinculos de matricula, pesquisas e relatorios.
+
 Se o MySQL nao estiver instalado ou iniciado, a aplicacao usa automaticamente
 um banco SQLite local chamado `sistema_academico.sqlite3`, para permitir testar
 a interface sem travar na conexao.
@@ -43,6 +46,13 @@ export MYSQL_PASSWORD=sua_senha
 export MYSQL_DATABASE=sistema_academico
 ```
 
+Para uso fora do ambiente de testes, configure tambem:
+
+```bash
+export FLASK_SECRET_KEY=uma_chave_segura
+export FLASK_DEBUG=0
+```
+
 ## 4. Rodar a interface
 
 ```bash
@@ -60,6 +70,17 @@ Para obrigar o uso do MySQL e desativar o modo SQLite local:
 ```bash
 MYSQL_REQUIRED=1 python3 app.py
 ```
+
+## Funcionalidades principais
+
+- Cadastro, listagem e edicao de alunos, professores e disciplinas.
+- Pesquisa de alunos por nome.
+- Pesquisa de professores por nome, registro ou area.
+- Pesquisa de disciplinas por nome, codigo ou professor.
+- Matricula de alunos em disciplinas sem duplicidade.
+- Remocao de matricula pela interface mantendo historico no banco.
+- Relatorios em PDF e JSON.
+- Validacao de campos obrigatorios, CPF e carga horaria.
 
 ## Arquivos adicionados
 

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block titulo %}Minhas Disciplinas - Sistema Academico{% endblock %}
+
+{% block conteudo %}
+<div style="max-width: 1000px; margin: 30px auto;">
+    <h2>📚 Minhas Disciplinas</h2>
+    
+    {% if disciplinas %}
+        <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <thead style="background-color: #667eea; color: white;">
+                <tr>
+                    <th style="padding: 15px; text-align: left;">Disciplina</th>
+                    <th style="padding: 15px; text-align: left;">Código</th>
+                    <th style="padding: 15px; text-align: left;">Carga Horária</th>
+                    <th style="padding: 15px; text-align: left;">Professor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for disciplina in disciplinas %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 15px;"><strong>{{ disciplina.nome }}</strong></td>
+                        <td style="padding: 15px;">{{ disciplina.codigo }}</td>
+                        <td style="padding: 15px;">{{ disciplina.carga_horaria }}h</td>
+                        <td style="padding: 15px;">{{ disciplina.professor }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="background: white; padding: 30px; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <p style="color: #666; font-size: 18px;">Você não está matriculado em nenhuma disciplina.</p>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('dashboard') }}" style="display: inline-block; padding: 10px 20px; background-color: #667eea; color: white; text-decoration: none; border-radius: 5px;">
+            Voltar
+        </a>
+    </div>
+</div>
+{% endblock %}

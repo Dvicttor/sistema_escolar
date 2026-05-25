@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - Sistema Acadêmico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            padding: 30px 20px;
+        }
+        .profile-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            text-align: center;
+        }
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
+            color: white;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            margin: 0 auto 15px;
+            border: 3px solid white;
+        }
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0 5px 0;
+            color: white;
+        }
+        .profile-badge {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .profile-body {
+            padding: 30px 25px;
+        }
+        .info-row {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+        .profile-footer {
+            padding: 20px 25px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        .alerts {
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alerts">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    {% if usuario.tipo == 'aluno' %}
+                        👨‍🎓
+                    {% elif usuario.tipo == 'professor' %}
+                        👨‍🏫
+                    {% else %}
+                        👤
+                    {% endif %}
+                </div>
+                {% if usuario_info %}
+                    <div class="profile-name">{{ usuario_info.nome }}</div>
+                    <div class="profile-badge">
+                        {% if usuario.tipo == 'aluno' %}
+                            Aluno
+                        {% elif usuario.tipo == 'professor' %}
+                            Professor
+                        {% else %}
+                            {{ usuario.tipo|capitalize }}
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="profile-name">{{ usuario.username }}</div>
+                    <div class="profile-badge">{{ usuario.tipo|capitalize }}</div>
+                {% endif %}
+            </div>
+
+            <div class="profile-body">
+                {% if usuario.tipo == 'aluno' and usuario_info %}
+                    <div class="info-row">
+                        <div class="info-label">RA (Matrícula)</div>
+                        <div class="info-value">{{ usuario_info.matricula }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Curso</div>
+                        <div class="info-value">{{ usuario_info.curso }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">CPF</div>
+                        <div class="info-value">{{ usuario_info.cpf }}</div>
+                    </div>
+                {% elif usuario.tipo == 'professor' and usuario_info %}
+                    <div class="info-row">
+                        <div class="info-label">Registro Acadêmico</div>
+                        <div class="info-value">{{ usuario_info.registro }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Área de Ensino</div>
+                        <div class="info-value">{{ usuario_info.area }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">CPF</div>
+                        <div class="info-value">{{ usuario_info.cpf }}</div>
+                    </div>
+                {% endif %}
+                <div class="info-row">
+                    <div class="info-label">Usuário de Acesso</div>
+                    <div class="info-value">{{ usuario.username }}</div>
+                </div>
+            </div>
+
+            <div class="profile-footer">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Voltar</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

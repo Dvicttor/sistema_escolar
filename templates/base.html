@@ -3,19 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Sistema Academico{% endblock %}</title>
+    <title>{% block title %}Sistema Escolar{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   </head>
   <body>
     <header class="topbar">
       <div class="brand-wrap">
-        <div class="space-scene" aria-hidden="true">
-          <div class="orbit">
-            <div class="ship"></div>
-          </div>
-          <div class="planet"></div>
-        </div>
-        <a class="brand" href="{{ url_for('index') }}">Sistema Academico</a>
+        <a class="brand" href="{{ url_for('index') }}">Sistema Escolar</a>
       </div>
       <nav>
         <a href="{{ url_for('alunos') }}">Alunos</a>
